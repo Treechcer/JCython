@@ -1,4 +1,4 @@
-# my programming language (not named YET)
+# JCython
 
 this repository is about my programming language I'm making in JS, HTML and CSS, this language is inspired by Python, C-based langs and other languages I've learnedf
 
