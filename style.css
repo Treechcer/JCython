@@ -1,0 +1,30 @@
+.b{
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+body{
+    height: 100vh;
+    margin: 0px;
+    padding: 0px;
+}
+
+.mid{
+    display: flex;
+}
+textarea{
+    height: 300px;
+    width: 300px;
+    resize: none;
+    padding: 15px;
+}
+
+button{
+    width: 80px;
+    height: 40px;
+}
