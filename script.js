@@ -4,7 +4,14 @@ function runScript(){
     var input = document.getElementById("input");
     var output = document.getElementById("output");
     var debug = document.getElementById("debug").checked;
-    output.textContent += "======= started =======" + "\n";
+
+    var start = "======= started =======" + "\n"
+    var end = "======= finshed =======" + "\n" + "\n";
+
+    var debugStart = "\n" + "====== debug started ======" + "\n"
+    var debugEnd = "====== debug finished ======" + "\n" + "\n"
+
+    output.textContent += start;
 
     var lineByLine = input.value.split("\n");
 
@@ -13,9 +20,10 @@ function runScript(){
     ];
 
     const defaultVariableRegEx = [
-        /int (\w+) = (\d+);/,
-        /text (\w+) = "(\w+)";/,
-        /bool (\w+) = (true|false|1|0);/,
+        /(int) (\w+) = (\d+);/,
+        /(text) (\w+) = "(\w+)";/,
+        /(bool) (\w+) = (true|false|1|0);/,
+        /(special) \$(\w+) = "(\w+)";/
     ];
 
     var calls = [];
@@ -35,14 +43,16 @@ function runScript(){
         printingOut(calls[0], variables);
 
         if (debug){
+            output.textContent += debugStart;
             debugVar(variables);
-            debug(calls);
+            debuger(calls);
+            output.textContent += debugEnd;
         }
     }
 
     scrollToBottom();
 
-    output.textContent += "======= finshed =======" + "\n" + "\n";
+    output.textContent += end;
 }
 
 function searchRegEx(regEx, lineByLine){
@@ -68,7 +78,7 @@ function searchRegExVariables(regEx, lineByLine){
         }
         let match = lineByLine[i].match(regEx);
         if (match) {
-            returnThing.push({name : match[1], pos : i, value : match[2]});
+            returnThing.push({name : match[2], pos : i, value : match[3], dataType : match[1]});
         }
     }
 
@@ -89,8 +99,13 @@ function printingOut(printCall, variables){
 
 function fVarCheck(isThisVar, vars){
     var strCheck = /"(\w+)"/
+    var numCheck = /(\d+)/
     isThisVar = isThisVar.inside
     var match = isThisVar.match(strCheck);
+    if (match){
+        return match[1];
+    }
+    var match = isThisVar.match(numCheck);
     if (match){
         return match[1];
     }
@@ -106,18 +121,14 @@ function fVarCheck(isThisVar, vars){
     return "err";
 }
 
-function debug(calls){
-    for (let callArr of calls) {
-        for (let call of callArr) {
-            output.textContent += `Line ${call.pos + 1}: ${call.line}\n`;
-        }
-    }
+function debuger(calls){
+    
 }
 
 function debugVar(variables){
     for (let varArr of variables) {
         for (let vars of varArr) {
-            output.textContent += `Line ${vars.pos + 1}: ${vars.name}, value: ${vars.value}\n`;
+            output.textContent += `Line ${vars.pos + 1}: ${vars.name}, value: ${vars.value}, dataType: ${vars.dataType}\n`;
         }
     }
 }
