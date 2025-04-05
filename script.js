@@ -31,7 +31,7 @@ function runScript(){
     var stop = errChech(lineByLine);
 
     if (!stop){
-        printingOut(calls[0]);
+        printingOut(calls[0], variables);
 
         if (debug){
             debugVar(variables);
@@ -72,10 +72,33 @@ function searchRegExVariables(regEx, lineByLine){
     return returnThing;
 }
 
-function printingOut(printCall){
+function printingOut(printCall, variables){
     for (p of printCall){
-        output.textContent += p.inside + "\n";
+        var out = fVarCheck(p, variables);
+        if (out != "err"){
+            output.textContent += out + "\n";
+        }
+        output.textContent += `Line ${p.pos + 1} error 2 (this variable doesn't exist, maybe you forgot to use ")` + "\n"
     }
+}
+
+function fVarCheck(isThisVar, vars){
+    var strCheck = /"(\w+)"/
+    isThisVar = isThisVar.inside
+    var match = isThisVar.match(strCheck);
+    if (match){
+        return match[1];
+    }
+
+    for (let varArr of vars){
+        for(let varS of varArr){
+            if (isThisVar == varS.name){
+                return varS.value;
+            }
+        }
+    }
+    
+    return "err";
 }
 
 function debug(calls){
