@@ -26,6 +26,13 @@ function runScript(){
         /(special) (\$\w+) = "(\w+)";/
     ];
 
+    const changeValueRegEx = [
+        /(\w+) = int\s*(\d+)/,
+        /(\w+) = text\s*"(\w+)"/,
+        /(\w+) = bool\s*(true|false|1|0)/,
+        /(\w+) = special\s*"(\w+)"/
+    ]
+
     var calls = [];
     var variables = [];
 
