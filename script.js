@@ -4,6 +4,7 @@ function runScript(){
     var input = document.getElementById("input");
     var output = document.getElementById("output");
     var debug = document.getElementById("debug").checked;
+    output.textContent += "======= started =======" + "\n";
 
     var lineByLine = input.value.split("\n");
 
@@ -40,6 +41,8 @@ function runScript(){
     }
 
     scrollToBottom();
+
+    output.textContent += "======= finshed =======" + "\n" + "\n";
 }
 
 function searchRegEx(regEx, lineByLine){
