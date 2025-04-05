@@ -28,13 +28,15 @@ function runScript(){
         variables[i] = searchRegExVariables(defaultVariableRegEx[i], lineByLine);
     }
 
-    errChech(lineByLine);
+    var stop = errChech(lineByLine);
 
-    printingOut(calls[0]);
+    if (!stop){
+        printingOut(calls[0]);
 
-    if (debug){
-        debugVar(variables);
-        debug(calls);
+        if (debug){
+            debugVar(variables);
+            debug(calls);
+        }
     }
 
     scrollToBottom();
@@ -42,7 +44,6 @@ function runScript(){
 
 function searchRegEx(regEx, lineByLine){
     var returnThing = [];
-    lineByLine.trimStart();
     for (let i = 0; i < lineByLine.length; i++) {
         if (lineByLine[i][0] == "#" || lineByLine[i][0] == "/"){
             continue;
@@ -58,7 +59,6 @@ function searchRegEx(regEx, lineByLine){
 
 function searchRegExVariables(regEx, lineByLine){
     var returnThing = [];
-    lineByLine.trimStart();
     for (let i = 0; i < lineByLine.length; i++) {
         if (lineByLine[i][0] == "#" || lineByLine[i][0] == "/"){
             continue;
@@ -100,10 +100,14 @@ function scrollToBottom() {
 }
 
 function errChech(lineByLine){
+    var err = false;
     let out = document.getElementById("output");
     for (let i = 0; i < lineByLine.length; i++){
         if (lineByLine[i][lineByLine[i].length-1] != ";" && lineByLine[i].match(/^\S+/)){
             out.textContent += `Line ${i + 1} error 1 (no semicolon)` + "\n"
+            err = true;
         }
     }
+
+    return err;
 }
