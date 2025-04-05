@@ -28,7 +28,7 @@ function runScript(){
         variables[i] = searchRegExVariables(defaultVariableRegEx[i], lineByLine);
     }
 
-    var stop = errChech(lineByLine);
+    var stop = errChech(lineByLine, 0, NaN);
 
     if (!stop){
         printingOut(calls[0], variables);
@@ -79,7 +79,7 @@ function printingOut(printCall, variables){
             output.textContent += out + "\n";
         }
         else{
-            output.textContent += `Line ${p.pos + 1} error 2 (this variable doesn't exist, maybe you forgot to use ")` + "\n"
+            errChech(lineByLine, p.line+1, `Line ${p.pos + 1} error 2 (this variable doesn't exist, maybe you forgot to use ")` + "\n")
         }
     }
 }
@@ -124,9 +124,12 @@ function scrollToBottom() {
     textarea.scrollTop = textarea.scrollHeight;
 }
 
-function errChech(lineByLine){
+function errChech(lineByLine, lineIfFound, errMsg){
     var err = false;
     let out = document.getElementById("output");
+    if (lineIfFound != 0){
+        out.textContent += errMsg;
+    }
     for (let i = 0; i < lineByLine.length; i++){
         if (lineByLine[i][lineByLine[i].length-1] != ";" && lineByLine[i].match(/^\S+/)){
             out.textContent += `Line ${i + 1} error 1 (no semicolon)` + "\n"
