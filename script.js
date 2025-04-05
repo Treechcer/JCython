@@ -11,8 +11,6 @@ function runScript(){
     var debugStart = "\n" + "====== debug started ======" + "\n"
     var debugEnd = "====== debug finished ======" + "\n" + "\n"
 
-    output.textContent += start;
-
     var lineByLine = input.value.split("\n");
 
     const defaultFunctionRegEx = [
@@ -23,7 +21,7 @@ function runScript(){
         /(int) (\w+) = (\d+);/,
         /(text) (\w+) = "(\w+)";/,
         /(bool) (\w+) = (true|false|1|0);/,
-        /(special) \$(\w+) = "(\w+)";/
+        /(special) (\$\w+) = "(\w+)";/
     ];
 
     var calls = [];
@@ -39,20 +37,49 @@ function runScript(){
 
     var stop = errChech(lineByLine, 0, NaN);
 
+    var special = changeStartEndVars(variables);
+    output.textContent += special["$start"];
+
     if (!stop){
         printingOut(calls[0], variables);
 
         if (debug){
-            output.textContent += debugStart;
+            output.textContent += special["$debugStart"];
             debugVar(variables);
             debuger(calls);
-            output.textContent += debugEnd;
+            output.textContent += special["$debugEnd"];
         }
     }
 
     scrollToBottom();
 
-    output.textContent += end;
+    output.textContent += special["$end"];
+}
+
+function changeStartEndVars(variables){
+    var retrunVar = {}
+    for (let varArr of variables){
+        for (let singleVar of varArr){
+            if (singleVar.dataType == "special"){
+                if (singleVar.name == "$start"){
+                    retrunVar["$start"] = singleVar.value + "\n";
+                }
+                if (singleVar.name == "$end"){
+                    retrunVar["$end"] = singleVar.value + "\n";
+                }
+                if (singleVar.name == "$debugStart"){
+                    retrunVar["$debugStart"] = singleVar.value + "\n";
+                }
+                if (singleVar.name == "$debugEnd"){
+                    retrunVar["$debugEnd"] = singleVar.value + "\n";
+                }
+            }
+        }
+    }
+
+    
+
+    return retrunVar;
 }
 
 function searchRegEx(regEx, lineByLine){
