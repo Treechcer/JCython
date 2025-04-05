@@ -42,7 +42,11 @@ function runScript(){
 
 function searchRegEx(regEx, lineByLine){
     var returnThing = [];
+    lineByLine.trimStart();
     for (let i = 0; i < lineByLine.length; i++) {
+        if (lineByLine[i][0] == "#" || lineByLine[i][0] == "/"){
+            continue;
+        }
         let match = lineByLine[i].match(regEx);
         if (match) {
             returnThing.push({line : match[0], pos : i, inside : match[1]});
@@ -54,7 +58,11 @@ function searchRegEx(regEx, lineByLine){
 
 function searchRegExVariables(regEx, lineByLine){
     var returnThing = [];
+    lineByLine.trimStart();
     for (let i = 0; i < lineByLine.length; i++) {
+        if (lineByLine[i][0] == "#" || lineByLine[i][0] == "/"){
+            continue;
+        }
         let match = lineByLine[i].match(regEx);
         if (match) {
             returnThing.push({name : match[1], pos : i, value : match[2]});
