@@ -11,9 +11,12 @@
         <div class="mid">
             <div class="line-numbers" id="line-numbers"></div>
             <textarea id="input" placeholder="code goes here..."></textarea>
-            <textarea id="output" placeholder="output goes here..."></textarea>
+            <textarea id="output" placeholder="output goes here..." readonly></textarea>
         </div><br>
-        <button onclick="runScript()"> run </button>
+        <div class="flexbox">
+            <button onclick="runScript()"> run </button>
+            <button onclick="clearConsole()"> clear console </button>
+        </div>
         <label> debug mode? <input type="checkbox" id="debug" value="true"></label>
     </div>
     
