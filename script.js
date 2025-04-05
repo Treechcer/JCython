@@ -14,7 +14,7 @@ function runScript(){
     const defaultVariableRegEx = [
         /int (\w+) = (\d+);/,
         /text (\w+) = "(\w+)";/,
-        /bool (\w+) = (true|false);/,
+        /bool (\w+) = (true|false|1|0);/,
     ];
 
     var calls = [];
@@ -78,7 +78,9 @@ function printingOut(printCall, variables){
         if (out != "err"){
             output.textContent += out + "\n";
         }
-        output.textContent += `Line ${p.pos + 1} error 2 (this variable doesn't exist, maybe you forgot to use ")` + "\n"
+        else{
+            output.textContent += `Line ${p.pos + 1} error 2 (this variable doesn't exist, maybe you forgot to use ")` + "\n"
+        }
     }
 }
 
