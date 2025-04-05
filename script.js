@@ -5,11 +5,13 @@ function runScript(){
     var output = document.getElementById("output");
     var debug = document.getElementById("debug").checked;
 
-    var start = "======= started =======" + "\n"
-    var end = "======= finshed =======" + "\n" + "\n";
+    var special = {}
 
-    var debugStart = "\n" + "====== debug started ======" + "\n"
-    var debugEnd = "====== debug finished ======" + "\n" + "\n"
+    special["$start"] = "======= started =======" + "\n";
+    special["$end"] = "======= finshed =======" + "\n" + "\n";
+
+    special["$debugStart"] = "\n" + "====== debug started ======" + "\n";
+    special["$debugEnd"] = "====== debug finished ======" + "\n" + "\n";
 
     var lineByLine = input.value.split("\n");
 
@@ -31,14 +33,33 @@ function runScript(){
         calls[j] = searchRegEx(defaultFunctionRegEx[j], lineByLine);
     }
 
+    var isError = false;
+    var index;
+
     for (let i = 0; i < defaultVariableRegEx.length; i++){
         variables[i] = searchRegExVariables(defaultVariableRegEx[i], lineByLine);
+        try {
+            if (variables[i].duplicate){
+                isError = true;
+                index = variables[i].line;  
+            }
+        }
+        catch(myBad){
+
+        }
     }
 
-    var stop = errChech(lineByLine, 0, NaN);
-
-    var special = changeStartEndVars(variables);
+    if (!isError){
+        var special = changeStartEndVars(variables);
+    }
     output.textContent += special["$start"];
+
+    var stop = errChech(lineByLine, -1, NaN);
+
+    if (isError){
+        stop = true;
+        errChech(lineByLine, 5, `Line ${index} error 3 reasigning value incorectly\n`);
+    }
 
     if (!stop){
         printingOut(calls[0], variables);
@@ -58,6 +79,10 @@ function runScript(){
 
 function changeStartEndVars(variables){
     var retrunVar = {}
+    retrunVar["$start"] = "======= started =======" + "\n";
+    retrunVar["$end"] = "======= finshed =======" + "\n" + "\n";
+    retrunVar["$debugStart"] = "\n" + "====== debug started ======" + "\n";
+    retrunVar["$debugEnd"] = "====== debug finished ======" + "\n" + "\n";
     for (let varArr of variables){
         for (let singleVar of varArr){
             if (singleVar.dataType == "special"){
@@ -76,8 +101,6 @@ function changeStartEndVars(variables){
             }
         }
     }
-
-    
 
     return retrunVar;
 }
@@ -105,6 +128,13 @@ function searchRegExVariables(regEx, lineByLine){
         }
         let match = lineByLine[i].match(regEx);
         if (match) {
+
+            let tempObj = {name : match[2], pos : i, value : match[3], dataType : match[1]};
+            for (let j = 0; j < returnThing.length; j++) {
+                if (tempObj["name"] == returnThing[j]["name"]) {
+                    return {duplicate : true, line : i};
+                }
+            }
             returnThing.push({name : match[2], pos : i, value : match[3], dataType : match[1]});
         }
     }
@@ -136,7 +166,6 @@ function fVarCheck(isThisVar, vars){
     if (match){
         return match[1];
     }
-
     for (let varArr of vars){
         for(let varS of varArr){
             if (isThisVar == varS.name){
@@ -144,7 +173,7 @@ function fVarCheck(isThisVar, vars){
             }
         }
     }
-    
+
     return "err";
 }
 
@@ -168,13 +197,15 @@ function scrollToBottom() {
 function errChech(lineByLine, lineIfFound, errMsg){
     var err = false;
     let out = document.getElementById("output");
-    if (lineIfFound != 0){
+    if (lineIfFound != -1){
         out.textContent += errMsg;
     }
-    for (let i = 0; i < lineByLine.length; i++){
-        if (lineByLine[i][lineByLine[i].length-1] != ";" && lineByLine[i].match(/^\S+/)){
-            out.textContent += `Line ${i + 1} error 1 (no semicolon)` + "\n"
-            err = true;
+    if (lineIfFound == -1){
+        for (let i = 0; i < lineByLine.length; i++){
+            if (lineByLine[i][lineByLine[i].length-1] != ";" && lineByLine[i].match(/^\S+/)){
+                out.textContent += `Line ${i + 1} error 1 (no semicolon)` + "\n"
+                err = true;
+            }
         }
     }
 
