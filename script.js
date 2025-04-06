@@ -14,14 +14,14 @@ function runScript(){
     var lineByLine = input.value.split("\n");
 
     const defaultFunctionRegEx = [
-        /(print)\((.+)\);/i,
+        /^(print)\((.+)\);$/i,
     ];
 
     const defaultVariableRegEx = [
-        /(int) (\w+) = (\d+);/,
-        /(text) (\w+) = "(\w+)";/,
-        /(bool) (\w+) = (true|false|1|0);/,
-        /(special) (\$\w+) = "(\w+)";/
+        /^(int) (\w+) = (\d+);$/,
+        /^(text) (\w+) = "(\w+)";$/,
+        /^(bool) (\w+) = (true|false|1|0);$/,
+        /^(special) (\$\w+) = "(\w+)";$/
     ];
 
     const changeValueRegEx = [
@@ -37,6 +37,10 @@ function runScript(){
 
     for (let line = 0; line < lineByLine.length; line++){
         let found = false;
+
+        if (lineByLine[line][0] == "#" || lineByLine[line][0] == "/"){
+            continue;
+        }
 
         for (func of defaultFunctionRegEx){
             var match = lineByLine[line].match(func);
