@@ -1,6 +1,6 @@
 # JCython
 
-this repository is about my programming language I'm making in JS, HTML and CSS, this language is inspired by Python, C-based langs and other languages I've learnedf
+this repository is about my programming language I'm making in JS, HTML and CSS, this language is inspired by Python, C-based langs and other languages I've learned
 
 # documentation
 
@@ -12,20 +12,29 @@ these functions are made by default and can be use (you can't yet make your own 
 
 ### print
 
-if you write "print( + anything + )" it will print out everything between the brackets (you can't use variables for now, so it'll print anything you put there and for now it doesn't need to be surounded by quotes)
+if you write "print( + anything + )" it will print out everything between the brackets (you variables and it'll print anything you put there it needs to be surrounded by quotes)
 
 ## variables
 
 you can make variables:
   - int - whole number
   - text - string in other languages
-  - bool - true or false value
+  - bool - true (1) or false (0) value
+  - special - these variable type is special, they always start with $, it'll be used to change the programming language, not yet added
 
-variables are made like:
+variables are made like this:
 ```cpp
 int name = 10;
 ```
 
-//you can use anything from int, text or bool for now, name can be any alphanumberical values for any non 0 length, and int can have any whole number value for int
+variables can be changed like this:
+```cpp
+name = int 10;
+```
 
-//bool can be for now only true or false, I will add 1 and 0 for bool too (they'll behave same as true and false, but as another way to express yourself)
+you can do basic arithmetic operations with variables like this (for now you can't use variables), you can do all basic arithmetic operations (+,-,*,/):
+```cpp
+int name = 10 * 10;
+```
+
+//you can use anything from int, text or bool for now, name can be any alphanumeric values for any non 0 length, and int can have any whole number value for int
