@@ -19,16 +19,16 @@ function runScript(){
 
     const defaultVariableRegEx = [
         /^(int) (\w+) = (\d+);$/,
-        /^(text) (\w+) = "(\w+)";$/,
+        /^(text) (\w+) = "([^"]+)";$/,
         /^(bool) (\w+) = (true|false|1|0);$/,
         /^(special) (\$\w+) = "(\w+)";$/
     ];
 
     const changeValueRegEx = [
-        /(\w+) = int\s*(\d+)/,
-        /(\w+) = text\s*"(\w+)"/,
-        /(\w+) = bool\s*(true|false|1|0)/,
-        /(\w+) = special\s*"(\w+)"/
+        /^(\w+) = (int)\s*(\d+);$/,
+        /^(\w+) = (text)\s*"([^"]+)"\;$/,
+        /^(\w+) = (bool)\s*(true|false|1|0);$/,
+        /^(\w+) = (special)\s*"(\w+)";$/
     ]
 
     var orders = [];
@@ -45,7 +45,7 @@ function runScript(){
         for (func of defaultFunctionRegEx){
             var match = lineByLine[line].match(func);
             if (match){
-                orders.push({name : match[1], value : match[2], line : line+1, bonus : match[0]})
+                orders.push({name : match[1], value : match[2], line : line+1, bonus : match[0], varChange : false})
                 found = true;
             }
         }
@@ -54,7 +54,16 @@ function runScript(){
             var match = lineByLine[line].match(variable);
             if (match){
                 orders.push({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[1]});
-                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3]}));
+                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false}));
+                found = true;
+            }
+        }
+
+        for (let variableChange of changeValueRegEx){
+            var match = lineByLine[line].match(variableChange);
+            if (match){
+                orders.push({name : match[1], value : match[3], line : line+1, bonus : match[0], dataType : match[2], varChange : true});
+                //variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3]}));
                 found = true;
             }
         }
@@ -98,6 +107,19 @@ function runScript(){
                     debugVariables(order, variables, count)
                 }
             }
+            
+            if (order.varChange){
+                for (let vars of variables){
+                    if (vars.name == order.name){
+                        vars.name = order.name;
+                        vars.bonus = order.bonus;
+                        vars.dataType = order.dataType;
+                        vars.line = order.line;
+                        vars.value = order.value;
+                        vars.varChange = false;
+                    }
+                }
+            }
 
             count++;
         }
@@ -133,7 +155,7 @@ function printOut(print, vars, lineCount){
 }
 
 function debugVariables(v, vars){
-    printOut(`"Line ${v.line}, name ${v.name}, datatype ${v.dataType}"`, vars)
+    printOut(`"Line ${v.line}, name ${v.name}, datatype ${v.dataType}, value ${v.value}"`, vars)
 }
 
 function clearConsole(){
