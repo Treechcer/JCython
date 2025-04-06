@@ -31,6 +31,13 @@ function runScript(){
         /^(\w+) = (special)\s*"(\w+)";$/
     ]
 
+    const basicAritmetRegEx = [
+        /^(int) (\w+) = (\d+) (\+) (\d+);$/,
+        /^(int) (\w+) = (\d+) (-) (\d+);$/,
+        /^(int) (\w+) = (\d+) (\*) (\d+);$/,
+        /^(int) (\w+) = (\d+) (\/) (\d+);$/
+    ]
+
     var orders = [];
     var variables = [];
     var stop = false;
@@ -45,7 +52,7 @@ function runScript(){
         for (func of defaultFunctionRegEx){
             var match = lineByLine[line].match(func);
             if (match){
-                orders.push({name : match[1], value : match[2], line : line+1, bonus : match[0], varChange : false})
+                orders.push({name : match[1], value : match[2], line : line+1, bonus : match[0], varChange : false, aritmetic : false})
                 found = true;
             }
         }
@@ -54,7 +61,7 @@ function runScript(){
             var match = lineByLine[line].match(variable);
             if (match){
                 orders.push({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[1]});
-                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false}));
+                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false, aritmetic : false}));
                 found = true;
             }
         }
@@ -62,8 +69,17 @@ function runScript(){
         for (let variableChange of changeValueRegEx){
             var match = lineByLine[line].match(variableChange);
             if (match){
-                orders.push({name : match[1], value : match[3], line : line+1, bonus : match[0], dataType : match[2], varChange : true});
+                orders.push({name : match[1], value : match[3], line : line+1, bonus : match[0], dataType : match[1], varChange : true, aritmetic : false});
                 //variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3]}));
+                found = true;
+            }
+        }
+
+        for(let aritmetics of basicAritmetRegEx){
+            var match = lineByLine[line].match(aritmetics);
+            if (match){
+                orders.push({name : match[2], value : {value1: match[3], value2 : match[5], aritmetic : match[4]}, line : line+1, bonus : match[0], dataType : match[1], varChange : true, aritmetic : true});
+                //variables.push(({name : match[2], value : {value1: match[3], value2 : match[4], aritmetic : match[3]}, line : line+1, bonus : match[0], dataType : match[2], varChange : true, aritmetic : true}));
                 found = true;
             }
         }
@@ -109,14 +125,25 @@ function runScript(){
             }
             
             if (order.varChange){
-                for (let vars of variables){
-                    if (vars.name == order.name){
-                        vars.name = order.name;
-                        vars.bonus = order.bonus;
-                        vars.dataType = order.dataType;
-                        vars.line = order.line;
-                        vars.value = order.value;
-                        vars.varChange = false;
+                if (!order.aritmetic){
+                    for (let vars of variables){
+                        if (vars.name == order.name){
+                            vars = changeVariable(vars, order)
+                        }
+                    }
+                }
+                if (order.aritmetic){
+                    var tempVar = variableConstructor(order);
+                    var changed = false;
+                    for (let vars of variables){
+                        if (vars.name == order.name){
+                            vars.value = tempVar.value;
+                            changed = true;
+                        }
+                    }
+
+                    if (!changed){
+                        variables.push(tempVar);
                     }
                 }
             }
@@ -126,6 +153,52 @@ function runScript(){
     }
 
     output.textContent += special["$end"]
+}
+
+function variableConstructor(objectToVar){
+    var sVariable = {};
+    
+    var tempNum1 = Number(objectToVar.value.value1);
+    var tempNum2 = Number(objectToVar.value.value2);
+    var operation = objectToVar.value.aritmetic;
+
+    sVariable.name = objectToVar.name;
+    sVariable.bonus = objectToVar.bonus;
+    sVariable.dataType = objectToVar.dataType;
+    sVariable.line = objectToVar.line;
+    sVariable.varChange = false;
+
+    if (operation == "+"){
+        sVariable.value = tempNum1 + tempNum2;
+    }
+    else if (operation == "-"){
+        sVariable.value = tempNum1 - tempNum2;
+    }
+    else if (operation == "*"){
+        sVariable.value = tempNum1 * tempNum2;
+    }
+    else if (operation == "/"){
+        if (tempNum2 == 0){
+            sVariable.value = "undefined"
+        }
+        else{
+            sVariable.value = tempNum1 / tempNum2;
+        }
+    }
+
+    sVariable.value = parseInt(sVariable.value)
+
+    return sVariable;
+}
+function changeVariable(vars, order){
+    vars.name = order.name;
+    vars.bonus = order.bonus;
+    vars.dataType = order.dataType;
+    vars.line = order.line;
+    vars.value = order.value;
+    vars.varChange = false;
+
+    return vars;
 }
 
 function printOut(print, vars, lineCount){
