@@ -32,10 +32,10 @@ function runScript(){
     ]
 
     const basicAritmetRegEx = [
-        /^(int) (\w+) = (\d+) (\+) (\d+);$/,
-        /^(int) (\w+) = (\d+) (-) (\d+);$/,
-        /^(int) (\w+) = (\d+) (\*) (\d+);$/,
-        /^(int) (\w+) = (\d+) (\/) (\d+);$/
+        /^(int) (\w+) = (\d+|\w+) (\+) (\d+|\w+);$/,
+        /^(int) (\w+) = (\d+|\w+) (-) (\d+|\w+);$/,
+        /^(int) (\w+) = (\d+|\w+) (\*) (\d+|\w+);$/,
+        /^(int) (\w+) = (\d+|\w+) (\/) (\d+|\w+);$/
     ]
 
     var orders = [];
@@ -133,7 +133,7 @@ function runScript(){
                     }
                 }
                 if (order.aritmetic){
-                    var tempVar = variableConstructor(order);
+                    var tempVar = variableConstructor(order, variables);
                     var changed = false;
                     for (let vars of variables){
                         if (vars.name == order.name){
@@ -155,11 +155,25 @@ function runScript(){
     output.textContent += special["$end"]
 }
 
-function variableConstructor(objectToVar){
+function variableConstructor(objectToVar, variables){
     var sVariable = {};
     
-    var tempNum1 = Number(objectToVar.value.value1);
-    var tempNum2 = Number(objectToVar.value.value2);
+    //console.log(objectToVar.value.value1, objectToVar.value.value2, variables)
+    
+    if (!nameToVar(objectToVar.value.value1, variables)){
+        var tempNum1 = Number(objectToVar.value.value1);
+    }
+    else{
+        var tempNum1 = Number(nameToVar(objectToVar.value.value1, variables));
+    }
+
+    if (!nameToVar(objectToVar.value.value2, variables)){
+        var tempNum2 = Number(objectToVar.value.value2);
+    }
+    else{
+        var tempNum2 = Number(nameToVar(objectToVar.value.value2, variables));
+    }
+
     var operation = objectToVar.value.aritmetic;
 
     sVariable.name = objectToVar.name;
@@ -199,6 +213,17 @@ function changeVariable(vars, order){
     vars.varChange = false;
 
     return vars;
+}
+
+function nameToVar(variable, variables){
+    for (v of variables){
+        if (variable == v.name){
+            return v.value;
+        }
+    }
+
+    return false;
+
 }
 
 function printOut(print, vars, lineCount){
