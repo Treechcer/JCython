@@ -157,20 +157,29 @@ function runScript(){
 
 function variableConstructor(objectToVar, variables){
     var sVariable = {};
-    
+    var E = false;
+
     //console.log(objectToVar.value.value1, objectToVar.value.value2, variables)
     
     if (!nameToVar(objectToVar.value.value1, variables)){
         var tempNum1 = Number(objectToVar.value.value1);
+        if (Number.isNaN(tempNum1)){
+            raiseErr(`error 3: not valid variable (you'll get more errors probably)`);
+            E = true;
+        }
     }
-    else{
+    else if(nameToVar(objectToVar.value.value1, variables)){
         var tempNum1 = Number(nameToVar(objectToVar.value.value1, variables));
     }
 
     if (!nameToVar(objectToVar.value.value2, variables)){
         var tempNum2 = Number(objectToVar.value.value2);
+        if (Number.isNaN(tempNum2)){
+            raiseErr(`error 3: not valid variable (you'll get more errors probably)`);
+            E = true;
+        }
     }
-    else{
+    else if(nameToVar(objectToVar.value.value2, variables)){
         var tempNum2 = Number(nameToVar(objectToVar.value.value2, variables));
     }
 
@@ -202,7 +211,12 @@ function variableConstructor(objectToVar, variables){
 
     sVariable.value = parseInt(sVariable.value)
 
-    return sVariable;
+    if (!E){
+        return sVariable;
+    }
+    else{
+        return false;
+    }
 }
 function changeVariable(vars, order){
     vars.name = order.name;
