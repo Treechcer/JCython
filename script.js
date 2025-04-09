@@ -45,7 +45,7 @@ function runScript(){
     for (let line = 0; line < lineByLine.length; line++){
         let found = false;
 
-        if (lineByLine[line][0] == "#" || lineByLine[line][0] == "/"){
+        if (lineByLine[line][0] == "#" || lineByLine[line][0] == "/" || lineByLine[line].trim() == ""){
             continue;
         }
 
