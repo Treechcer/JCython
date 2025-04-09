@@ -32,9 +32,17 @@ variables can be changed like this:
 name = int 10;
 ```
 
-you can do basic arithmetic operations with variables like this (for now you can't use variables), you can do all basic arithmetic operations (+,-,*,/):
+you can do basic arithmetic operations with variables like this, you can do all basic arithmetic operations (+,-,*,/):
 ```cpp
 int name = 10 * 10;
+```
+
+with variables:
+```js
+int a = 10;
+int b = a + 10;
+print(b);
+#output is 20, you can use all aritmetic operations for int in this example
 ```
 
 //you can use anything from int, text or bool for now, name can be any alphanumeric values for any non 0 length, and int can have any whole number value for int
