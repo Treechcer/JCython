@@ -6,6 +6,10 @@ this repository is about my programming language I'm making in JS, HTML and CSS,
 
 here's the documentation for this language and what it contains
 
+# Comments
+
+You can make comments with using `#` or `/`, either are fine and are one line comment, your line of code must start with them or you'll run into error. You can also skip lines with only new line or with whitespace, both shouldn't raise any errors.
+
 ## default functions
 
 these functions are made by default and can be use (you can't yet make your own functions)
@@ -42,7 +46,7 @@ with variables:
 int a = 10;
 int b = a + 10;
 print(b);
-#output is 20, you can use all aritmetic operations for int in this example
+#output is 20, you can use all arithmetic operations for int in this example
 ```
 
 //you can use anything from int, text or bool for now, name can be any alphanumeric values for any non 0 length, and int can have any whole number value for int
