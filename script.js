@@ -63,6 +63,24 @@ function runScript(){
                 orders.push({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[1]});
                 variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false, aritmetic : false}));
                 found = true;
+
+                console.log(orders[line].value);
+
+                if (orders[line].name == "$start"){
+                    special["$start"] = orders[line].value + "\n";
+                }
+
+                if (orders[line].name == "$end"){
+                    special["$end"] = orders[line].value + "\n";
+                }
+
+                if (orders[line].name == "$debugStart"){
+                    special["$debugStart"] = orders[line].value + "\n";
+                }
+
+                if (orders[line].name == "$debugEnd"){
+                    special["$debugEnd"] = orders[line].value + "\n";
+                }
             }
         }
 
@@ -90,9 +108,14 @@ function runScript(){
             stop = true;
         }
     }
+
+    output.textContent += special["$start"];
+
+    if (debugB){
+        output.textContent += special["$debugStart"];
+    }
+
     if (!stop){
-        output.textContent += special["$start"]
-        
         var count = 1;
 
         for (let order of orders){
@@ -150,6 +173,10 @@ function runScript(){
 
             count++;
         }
+    }
+
+    if (debugB){
+        output.textContent += special["$debugEnd"];
     }
 
     output.textContent += special["$end"]
