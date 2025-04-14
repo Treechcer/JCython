@@ -50,3 +50,52 @@ print(b);
 ```
 
 //you can use anything from int, text or bool for now, name can be any alphanumeric values for any non 0 length, and int can have any whole number value for int
+
+### special variables
+
+Special variables are variables that has the `special` data type and all of the variables start with `$`, they do special stuff. Here are all the special variables you can use for now.
+  - $start
+    - $start can change the starting message when your code starts.
+    - you can declare it as: 
+      ```cpp 
+      special $start = "hello";
+      ```
+      this will make it that your code starts with "hello" instead of the default.
+    - default value: 
+      ```js
+      special["$start"] = '======= started =======' + "\n";
+      ```
+
+  - $end
+    - $end can change the ending message when your code ends.
+    - you can declare it as: 
+      ```cpp 
+      special $end = "bye";
+      ```
+      this will make it that your code ends with "bye" instead of the default.
+    - default value: 
+      ```js
+      special["$end"] = '======= finished =======' + '\n' + "\n";
+      ```
+  - $debugStart
+    - $debugStart can change the starting debug message when debug starts.
+    - you can declare it as: 
+      ```cpp 
+      special $debugStart = "debug started :3";
+      ```
+      this will make it that your debug message starts with "debug started :3" instead of the default.
+    - default value: 
+      ```js
+      special["$debugStart"] = "\n" + "====== debug started ======" + "\n";
+      ```
+  - $debugEnd
+    - $debugEnd can change the ending debug message when debug ends.
+    - you can declare it as: 
+      ```cpp 
+      special $start = "bai";
+      ```
+      this will make it that your debug message ends with "bai" instead of the default.
+    - default value: 
+      ```js
+      special["$debugEnd"] = "====== debug finished ======" + "\n" + "\n";
+      ```

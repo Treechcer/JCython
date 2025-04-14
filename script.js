@@ -6,7 +6,7 @@ function runScript(){
     var special = {}
 
     special["$start"] = '======= started =======' + "\n";
-    special["$end"] = '======= finshed =======' + '\n' + "\n";
+    special["$end"] = '======= finished =======' + '\n' + "\n";
 
     special["$debugStart"] = "\n" + "====== debug started ======" + "\n";
     special["$debugEnd"] = "====== debug finished ======" + "\n" + "\n";
