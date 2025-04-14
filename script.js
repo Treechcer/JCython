@@ -18,9 +18,9 @@ function runScript(){
     ];
 
     const defaultVariableRegEx = [
-        /^(int) (\w+) = (\d+);$/,
+        /^(int) (\w+) = (\d+|\w+);$/,
         /^(text) (\w+) = "([^"]+)";$/,
-        /^(bool) (\w+) = (true|false|1|0);$/,
+        /^(bool) (\w+) = (true|false|1|0|\w+);$/,
         /^(special) (\$\w+) = "(\w+)";$/
     ];
 
@@ -64,7 +64,7 @@ function runScript(){
                 variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false, aritmetic : false}));
                 found = true;
 
-                console.log(orders[line].value);
+                //console.log(orders[line].value);
 
                 if (orders[line].name == "$start"){
                     special["$start"] = orders[line].value + "\n";
@@ -124,6 +124,19 @@ function runScript(){
             }
     
             if (order.dataType == "int"){
+                /*
+
+                TODO FIX THIS MESS!!! DOESN'T SWITCH VALUES IN VARIABLES!!
+
+
+                if (isNaN(Number(order.value))){
+                    orders[count-1] = variableNameToValue(order, variables);
+                    if (orders[count-1] == "error"){
+                        raiseErr(`error 4: varible not found on line ${count}`);
+                        stop = true;
+                    }
+                }
+                */
                 if (debugB){
                     debugVariables(order, variables, count)
                 }
@@ -136,6 +149,24 @@ function runScript(){
             }
     
             if (order.dataType == "bool"){
+                /*
+                
+                TODO FIX THIS MESS!!! DOESN'T SWITCH VALUES IN VARIABLES!!
+
+
+                if (order.value != "true" && order.value != "false" && order.value != "0" && order.value != "1"){
+                    orders[count-1] = variableNameToValue(order, variables);
+                    console.log(orders[count-1])
+                    if (orders[count-1] == "error"){
+                        raiseErr(`error 4: varible not found on line ${count}`);
+                        stop = true;
+                    }
+                }
+
+
+                
+                
+                */
                 if (debugB){
                     debugVariables(order, variables, count)
                 }
@@ -157,6 +188,9 @@ function runScript(){
                 }
                 if (order.aritmetic){
                     var tempVar = variableConstructor(order, variables);
+                    if (!tempVar){
+                        raiseErr(`error 3: not valid variable`);
+                    }
                     var changed = false;
                     for (let vars of variables){
                         if (vars.name == order.name){
@@ -182,6 +216,17 @@ function runScript(){
     output.textContent += special["$end"]
 }
 
+function variableNameToValue(variable, vars){
+    for (let names of vars){
+        if (variable.value == names.name){
+            variable.value = names.value;
+            return variable;
+        }
+    }
+
+    return "error";
+}
+
 function variableConstructor(objectToVar, variables){
     var sVariable = {};
     var E = false;
@@ -191,7 +236,6 @@ function variableConstructor(objectToVar, variables){
     if (!nameToVar(objectToVar.value.value1, variables)){
         var tempNum1 = Number(objectToVar.value.value1);
         if (Number.isNaN(tempNum1)){
-            raiseErr(`error 3: not valid variable (you'll get more errors probably)`);
             E = true;
         }
     }
@@ -202,7 +246,6 @@ function variableConstructor(objectToVar, variables){
     if (!nameToVar(objectToVar.value.value2, variables)){
         var tempNum2 = Number(objectToVar.value.value2);
         if (Number.isNaN(tempNum2)){
-            raiseErr(`error 3: not valid variable (you'll get more errors probably)`);
             E = true;
         }
     }
