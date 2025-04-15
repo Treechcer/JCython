@@ -1,7 +1,8 @@
+var debugB = document.getElementById("debug").checked;
+
 function runScript(){
     var input = document.getElementById("input");
     var output = document.getElementById("output");
-    var debugB = document.getElementById("debug").checked;
 
     var special = {}
 
@@ -19,7 +20,7 @@ function runScript(){
 
     const defaultVariableRegEx = [
         /^(int) (\w+) = (\d+|\w+);$/,
-        /^(text) (\w+) = "([^"]+)";$/,
+        /^(text) (\w+) = ("*[^"]+"*);$/,
         /^(bool) (\w+) = (true|false|1|0|\w+);$/,
         /^(special) (\$\w+) = "(\w+)";$/
     ];
@@ -61,7 +62,7 @@ function runScript(){
             var match = lineByLine[line].match(variable);
             if (match){
                 orders.push({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[1]});
-                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[3], varChange : false, aritmetic : false}));
+                variables.push(({name : match[2], value : match[3], line : line+1, bonus : match[0], dataType : match[1], varChange : false, aritmetic : false}));
                 found = true;
 
                 //console.log(orders[line].value);
@@ -105,7 +106,7 @@ function runScript(){
         if (!found){
             output.textContent += special["$start"]
             raiseErr(`error 2: couldn't find the meaning of line ${line+1}`)
-            stop = true;
+            return;
         }
     }
 
@@ -124,49 +125,70 @@ function runScript(){
             }
     
             if (order.dataType == "int"){
-                /*
-
-                TODO FIX THIS MESS!!! DOESN'T SWITCH VALUES IN VARIABLES!!
-
-
                 if (isNaN(Number(order.value))){
+                    //document.writeln("cc")
                     orders[count-1] = variableNameToValue(order, variables);
                     if (orders[count-1] == "error"){
                         raiseErr(`error 4: varible not found on line ${count}`);
-                        stop = true;
+                        return;
+                    }
+                    else if (orders[count-1] == "error 2"){
+                        raiseErr(`error 5: different data types on asignment on line ${count}`)
+                        return;
+                    }
+                    else{
+                        for(let i = 0; i < variables.length; i++){
+                            if (orders[count-1].name == variables[i].name){
+                                variables[i] = orders[count-1]
+                            }
+                        }
                     }
                 }
-                */
                 if (debugB){
                     debugVariables(order, variables, count)
                 }
             }
     
             if (order.dataType == "text"){
+                if (order.value[0] != '"' && order.value[order.value.length-1] != '"'){
+                    orders[count-1] = variableNameToValue(order, variables);
+                    if (orders[count-1] == "error"){
+                        raiseErr(`error 4: varible not found on line ${count}`);
+                        return;
+                    }
+                    else{
+                        for(let i = 0; i < variables.length; i++){
+                            if (orders[count-1].name == variables[i].name){
+                                variables[i] = orders[count-1]
+                            }
+                        }
+                    }
+                }
+
                 if (debugB){
                     debugVariables(order, variables, count)
                 }
             }
     
             if (order.dataType == "bool"){
-                /*
-                
-                TODO FIX THIS MESS!!! DOESN'T SWITCH VALUES IN VARIABLES!!
-
-
                 if (order.value != "true" && order.value != "false" && order.value != "0" && order.value != "1"){
                     orders[count-1] = variableNameToValue(order, variables);
-                    console.log(orders[count-1])
                     if (orders[count-1] == "error"){
                         raiseErr(`error 4: varible not found on line ${count}`);
-                        stop = true;
+                        return;
+                    }
+                    else if (orders[count-1] == "error 2"){
+                        raiseErr(`error 5: different data types on asignment on line ${count}`)
+                        return;
+                    }
+                    else{
+                        for(let i = 0; i < variables.length; i++){
+                            if (orders[count-1].name == variables[i].name){
+                                variables[i] = orders[count-1]
+                            }
+                        }
                     }
                 }
-
-
-                
-                
-                */
                 if (debugB){
                     debugVariables(order, variables, count)
                 }
@@ -190,6 +212,7 @@ function runScript(){
                     var tempVar = variableConstructor(order, variables);
                     if (!tempVar){
                         raiseErr(`error 3: not valid variable`);
+                        return;
                     }
                     var changed = false;
                     for (let vars of variables){
@@ -218,9 +241,12 @@ function runScript(){
 
 function variableNameToValue(variable, vars){
     for (let names of vars){
-        if (variable.value == names.name){
+        if (variable.value == names.name && variable.dataType == names.dataType){
             variable.value = names.value;
             return variable;
+        }
+        else if (variable.value == names.name && !(variable.dataType == names.dataType)){
+            return "error 2"
         }
     }
 
@@ -318,7 +344,12 @@ function printOut(print, vars, lineCount){
     for (v of vars){
         if (print == v.name){
             canWe = true;
-            print = v.value;
+            if (v.dataType == "text"){
+                print = v.value.slice(1,-1);
+            }
+            else{
+                print = v.value;
+            }
             break;
         }
     }
@@ -329,6 +360,7 @@ function printOut(print, vars, lineCount){
     }
     else if(!canWe && (print[0] != '"' || print[print.length-1] != '"')){
         raiseErr(`error 1: forgot to use qutation marks on line ${lineCount}`);
+        return;
     }
 
     if (canWe){
@@ -346,7 +378,23 @@ function clearConsole(){
 }
 
 function raiseErr(errorMsg){
+    var special = {}
+
+    special["$start"] = '======= started =======' + "\n";
+    special["$end"] = '======= finished =======' + '\n' + "\n";
+
+    special["$debugStart"] = "\n" + "====== debug started ======" + "\n";
+    special["$debugEnd"] = "====== debug finished ======" + "\n" + "\n";
+
     var output = document.getElementById("output");
 
     output.textContent += `${errorMsg} \n`
+
+    if (debugB){
+        output.textContent += special["$debugEnd"];
+    }
+
+    output.textContent += special["$end"]
+
+    return;
 }
