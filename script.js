@@ -125,7 +125,7 @@ function runScript(){
             }
     
             if (order.dataType == "int"){
-                if (isNaN(Number(order.value))){
+                if (isNaN(Number(order.value)) && !order.aritmetic){
                     //document.writeln("cc")
                     orders[count-1] = variableNameToValue(order, variables);
                     if (orders[count-1] == "error"){
