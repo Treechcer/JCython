@@ -19,24 +19,25 @@ function runScript(){
     ];
 
     const defaultVariableRegEx = [
-        /^(int) (\w+) = (\d+|\w+);$/,
-        /^(text) (\w+) = ("*[^"]+"*);$/,
-        /^(bool) (\w+) = (true|false|1|0|\w+);$/,
-        /^(special) (\$\w+) = "(\w+)";$/
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+);\s*$/,
+        /^(text)\s+(\w+)\s*=\s*("*[^"]+"*);\s*$/,
+        /^(bool)\s+(\w+)\s*=\s*(true|false|1|0|\w+);\s*$/,
+        /^(special)\s+(\$\w+)\s*=\s*"(\w+)";\s*$/
     ];
 
     const changeValueRegEx = [
-        /^(\w+) = (int)\s*(\d+);$/,
-        /^(\w+) = (text)\s*"([^"]+)"\;$/,
-        /^(\w+) = (bool)\s*(true|false|1|0);$/,
-        /^(\w+) = (special)\s*"(\w+)";$/
+        /^(\w+)\s+=\s*(int)\s*(\d+);\s*$/,
+        /^(\w+)\s+=\s*(text)\s*"([^"]+)"\;\s*$/,
+        /^(\w+)\s+=\s*(bool)\s*(true|false|1|0);\s*$/,
+        /^(\w+)\s+=\s*(special)\s*"(\w+)";\s*$/
     ]
 
     const basicAritmetRegEx = [
-        /^(int) (\w+) = (\d+|\w+) (\+) (\d+|\w+);$/,
-        /^(int) (\w+) = (\d+|\w+) (-) (\d+|\w+);$/,
-        /^(int) (\w+) = (\d+|\w+) (\*) (\d+|\w+);$/,
-        /^(int) (\w+) = (\d+|\w+) (\/) (\d+|\w+);$/
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\+)\s*(\d+|\w+);\s*$/,
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(-)\s*(\d+|\w+);\s*$/,
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\*)\s*(\d+|\w+);\s*$/,
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\/)\s*(\d+|\w+);\s*$/,
+        /^(bool)\s+(\w+)\s*=\s*(\d+|true|false|\w+)\s*(<|>|==)\s*(\d+|\w+);\s*$/
     ]
 
     var orders = [];
@@ -126,7 +127,6 @@ function runScript(){
     
             if (order.dataType == "int"){
                 if (isNaN(Number(order.value)) && !order.aritmetic){
-                    //document.writeln("cc")
                     orders[count-1] = variableNameToValue(order, variables);
                     if (orders[count-1] == "error"){
                         raiseErr(`error 4: varible not found on line ${count}`);
@@ -208,7 +208,7 @@ function runScript(){
                         }
                     }
                 }
-                if (order.aritmetic){
+                if (order.aritmetic && order.dataType == "int"){
                     var tempVar = variableConstructor(order, variables);
                     if (!tempVar){
                         raiseErr(`error 3: not valid variable`);
