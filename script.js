@@ -33,10 +33,7 @@ function runScript(){
     ]
 
     const basicAritmetRegEx = [
-        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\+)\s*(\d+|\w+);\s*$/,
-        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(-)\s*(\d+|\w+);\s*$/,
-        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\*)\s*(\d+|\w+);\s*$/,
-        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\/)\s*(\d+|\w+);\s*$/,
+        /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\+|\-|\*|\/)\s*(\d+|\w+);\s*$/,
         /^(bool)\s+(\w+)\s*=\s*(\d+|true|false|\w+)\s*(<|>|==)\s*(\d+|\w+);\s*$/
     ]
 
