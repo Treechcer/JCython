@@ -34,7 +34,7 @@ function runScript(){
 
     const basicAritmetRegEx = [
         /^(int)\s+(\w+)\s*=\s*(\d+|\w+)\s*(\+|\-|\*|\/)\s*(\d+|\w+);\s*$/,
-        /^(bool)\s+(\w+)\s*=\s*(\d+|true|false|\w+)\s*(<|>|==)\s*(\d+|\w+);\s*$/
+        /^(bool)\s+(\w+)\s*=\s*(\d+|true|false|\w+)\s*(<|>|==)\s*(\d+|true|false|\w+);\s*$/
     ]
 
     var orders = [];
@@ -167,7 +167,7 @@ function runScript(){
                 }
             }
     
-            if (order.dataType == "bool"){
+            if (order.dataType == "bool" && !order.aritmetic){
                 if (order.value != "true" && order.value != "false" && order.value != "0" && order.value != "1"){
                     orders[count-1] = variableNameToValue(order, variables);
                     if (orders[count-1] == "error"){
@@ -223,6 +223,36 @@ function runScript(){
                         variables.push(tempVar);
                     }
                 }
+
+                if (order.aritmetic && order.dataType == "bool"){
+                    if (order.value.value1 != "true" && order.value.value1 != "false" && order.value.value1 != "0" && order.value.value1 != "1"){
+                        var ex0 = variableNameToValue(order.value.value1, variables);
+                    }
+                    else{
+                        var ex0 = order.value.value1
+                    }
+                    if (order.value.value2 != "true" && order.value.value2 != "false" && order.value.value2 != "0" && order.value.value2 != "1"){
+                        var ex1 = variableNameToValue(order.value.value1, variables);
+                    }
+                    else{
+                        var ex1 = order.value.value2
+                    }
+                    order.value = boolExpressions(ex0, ex1, order.value.aritmetic)
+                    if (order.value == "error"){
+                        raiseErr(`Error 6: incorect comparison operator`)
+                    }
+                    var changed = false;
+                    for (let vars of variables){
+                        if (vars.name == order.name){
+                            vars.value = order.value;
+                            changed = true;
+                        }
+                    }
+
+                    if (!changed){
+                        variables.push(order);
+                    }
+                }
             }
 
             count++;
@@ -234,6 +264,21 @@ function runScript(){
     }
 
     output.textContent += special["$end"]
+}
+
+function boolExpressions(exp1, exp2, ari){
+    if (ari == "<"){
+        return exp1 < exp2;
+    }
+    else if (ari == ">"){
+        return exp1 > exp2;
+    }
+    else if (ari == "=="){
+        return exp1 === exp2;
+    }
+    else{
+        return "error"
+    }
 }
 
 function variableNameToValue(variable, vars){
