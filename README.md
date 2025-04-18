@@ -31,6 +31,13 @@ variables are made like this:
 int name = 10;
 ```
 
+boolean variables can also be evaluated as:
+```cpp
+bool a = 1 < 10;
+#also you can do
+bool b = a > 0;
+```
+
 variables can be changed like this:
 ```cpp
 name = int 10;
